@@ -2,6 +2,9 @@ import {
   collection,
   addDoc,
   getDocs,
+  doc,
+  updateDoc,
+  deleteDoc,
   query,
   orderBy,
   limit,
@@ -166,6 +169,64 @@ export async function createEvent(formData) {
     saveLocalEvents([fallbackEvent, ...local])
     return fallbackEvent
   }
+}
+
+/**
+ * Memperbarui data event di Firestore (updateDoc)
+ * AC 4: Kuota tidak boleh lebih kecil dari tiket terjual
+ */
+export async function updateEvent(id, formData, currentTiketTerjual = 0) {
+  const validation = validateEventInput(formData)
+  if (!validation.isValid) {
+    const firstError = Object.values(validation.errors)[0]
+    throw new Error(firstError)
+  }
+
+  const parsedKuota = Math.round(Number(formData.kuota))
+  if (parsedKuota < Number(currentTiketTerjual)) {
+    throw new Error(`Kuota tidak boleh lebih kecil dari tiket terjual (${currentTiketTerjual} tiket).`)
+  }
+
+  const payload = {
+    nama: formData.nama.trim(),
+    tanggal: formData.tanggal,
+    lokasi: formData.lokasi.trim(),
+    harga_tiket: Math.round(Number(formData.harga_tiket)),
+    kuota: parsedKuota
+  }
+
+  if (isFirebaseConfigured) {
+    try {
+      const docRef = doc(db, 'event', id)
+      await updateDoc(docRef, payload)
+    } catch (err) {
+      console.warn('Gagal memperbarui di Firestore online, memperbarui cache lokal:', err)
+    }
+  }
+
+  const local = getLocalEvents()
+  const updated = local.map((ev) => (ev.id === id ? { ...ev, ...payload } : ev))
+  saveLocalEvents(updated)
+  return { id, ...payload, tiket_terjual: currentTiketTerjual }
+}
+
+/**
+ * Menghapus event dari Firestore (deleteDoc)
+ */
+export async function deleteEvent(id) {
+  if (isFirebaseConfigured) {
+    try {
+      const docRef = doc(db, 'event', id)
+      await deleteDoc(docRef)
+    } catch (err) {
+      console.warn('Gagal menghapus di Firestore online, menghapus cache lokal:', err)
+    }
+  }
+
+  const local = getLocalEvents()
+  const filtered = local.filter((ev) => ev.id !== id)
+  saveLocalEvents(filtered)
+  return true
 }
 
 /**

@@ -1,7 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { validateEventInput, SAMPLE_EVENT_DATA } from '../../services/eventService.js'
 
-export default function EventFormModal({ isOpen, onClose, onSubmitSuccess }) {
+export default function EventFormModal({
+  isOpen,
+  initialData = null,
+  onClose,
+  onSubmitSuccess
+}) {
+  const isEditing = Boolean(initialData && initialData.id)
+
   const [formData, setFormData] = useState({
     nama: '',
     tanggal: '',
@@ -13,6 +20,28 @@ export default function EventFormModal({ isOpen, onClose, onSubmitSuccess }) {
   const [errors, setErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  // Sinkronisasi data saat modal dibuka atau initialData berubah
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        nama: initialData.nama || '',
+        tanggal: initialData.tanggal || '',
+        lokasi: initialData.lokasi || '',
+        harga_tiket: initialData.harga_tiket !== undefined ? String(initialData.harga_tiket) : '',
+        kuota: initialData.kuota !== undefined ? String(initialData.kuota) : ''
+      })
+    } else {
+      setFormData({
+        nama: '',
+        tanggal: '',
+        lokasi: '',
+        harga_tiket: '',
+        kuota: ''
+      })
+    }
+    setErrors({})
+  }, [initialData, isOpen])
+
   if (!isOpen) return null
 
   const handleChange = (e) => {
@@ -21,7 +50,6 @@ export default function EventFormModal({ isOpen, onClose, onSubmitSuccess }) {
       ...prev,
       [name]: value
     }))
-    // Hapus pesan galat saat field diubah
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }))
     }
@@ -43,6 +71,16 @@ export default function EventFormModal({ isOpen, onClose, onSubmitSuccess }) {
     e.preventDefault()
     const validation = validateEventInput(formData)
 
+    // Validasi AC 4: kuota diubah menjadi lebih kecil dari tiket terjual
+    if (isEditing && initialData) {
+      const parsedKuota = Number(formData.kuota)
+      const tiketTerjual = Number(initialData.tiket_terjual || 0)
+      if (!isNaN(parsedKuota) && parsedKuota < tiketTerjual) {
+        validation.isValid = false
+        validation.errors.kuota = `Kuota tidak boleh lebih kecil dari tiket terjual (${tiketTerjual} tiket).`
+      }
+    }
+
     if (!validation.isValid) {
       setErrors(validation.errors)
       return
@@ -50,7 +88,7 @@ export default function EventFormModal({ isOpen, onClose, onSubmitSuccess }) {
 
     try {
       setIsSubmitting(true)
-      await onSubmitSuccess(formData)
+      await onSubmitSuccess(formData, initialData)
       onClose()
     } catch (err) {
       setErrors({ form: err.message || 'Gagal menyimpan event.' })
@@ -64,29 +102,37 @@ export default function EventFormModal({ isOpen, onClose, onSubmitSuccess }) {
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <div>
-            <h2 id="form-event-title" className="modal-title">Tambah Event</h2>
-            <p className="modal-subtitle">Isi data acara sesuai skema Cloud Firestore</p>
+            <h2 id="form-event-title" className="modal-title">
+              {isEditing ? 'Ubah Event' : 'Tambah Event'}
+            </h2>
+            <p className="modal-subtitle">
+              {isEditing
+                ? 'Perbarui data acara sesuai skema Cloud Firestore'
+                : 'Isi data acara sesuai skema Cloud Firestore'}
+            </p>
           </div>
           <button type="button" className="btn-close" onClick={onClose} aria-label="Tutup formulir">
             &times;
           </button>
         </div>
 
-        {/* Quick action: Pakai Data Contoh dari Skema */}
-        <div className="sample-data-banner">
-          <div className="sample-data-info">
-            <span className="sample-data-badge">Contoh Skema</span>
-            <span className="sample-data-text">Workshop Sablon Tote Bag (30 kuota, Rp 75.000)</span>
+        {/* Quick action: Pakai Data Contoh dari Skema (hanya di mode tambah) */}
+        {!isEditing && (
+          <div className="sample-data-banner">
+            <div className="sample-data-info">
+              <span className="sample-data-badge">Contoh Skema</span>
+              <span className="sample-data-text">Workshop Sablon Tote Bag (30 kuota, Rp 75.000)</span>
+            </div>
+            <button
+              type="button"
+              className="btn-sample-fill"
+              onClick={handleUseSampleData}
+              id="btn-use-sample-event"
+            >
+              Gunakan Data Contoh
+            </button>
           </div>
-          <button
-            type="button"
-            className="btn-sample-fill"
-            onClick={handleUseSampleData}
-            id="btn-use-sample-event"
-          >
-            Gunakan Data Contoh
-          </button>
-        </div>
+        )}
 
         <form onSubmit={handleSubmit} className="form-event" noValidate>
           {errors.form && (
@@ -214,7 +260,11 @@ export default function EventFormModal({ isOpen, onClose, onSubmitSuccess }) {
               {errors.kuota ? (
                 <span className="field-error-msg">{errors.kuota}</span>
               ) : (
-                <span className="field-hint">1 sampai 500</span>
+                <span className="field-hint">
+                  {isEditing && initialData
+                    ? `Min ${initialData.tiket_terjual || 1} (terjual: ${initialData.tiket_terjual || 0})`
+                    : '1 sampai 500'}
+                </span>
               )}
             </div>
           </div>

@@ -23,7 +23,9 @@
   --warning: #F59E0B;
   --warning-light: #FEF3C7;
   --danger: #EF4444;
+  --danger-hover: #DC2626;
   --danger-light: #FEF2F2;
+  --danger-glow: rgba(239, 68, 68, 0.16);
   --info: #3B82F6;
   --info-light: #EFF6FF;
 
@@ -256,6 +258,22 @@ button, input, select, textarea {
   cursor: not-allowed;
 }
 
+.btn-danger {
+  background-color: var(--danger);
+  color: #fff;
+  box-shadow: 0 4px 12px var(--danger-glow);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: var(--danger-hover);
+  transform: translateY(-1px);
+}
+
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Event List & Card */
 .event-list {
   display: flex;
@@ -358,6 +376,52 @@ button, input, select, textarea {
 .event-quota-value {
   font-size: 13px;
   color: var(--text-secondary);
+}
+
+/* Event Card Actions (Ubah & Hapus) */
+.event-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--surface-alt);
+}
+
+.btn-card-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-card-edit {
+  color: var(--text-secondary);
+}
+
+.btn-card-edit:hover {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  border-color: #C7D2FE;
+}
+
+.btn-card-delete {
+  color: var(--danger);
+  border-color: #FECACA;
+  background-color: #FFF8F8;
+}
+
+.btn-card-delete:hover {
+  background-color: var(--danger-light);
+  border-color: var(--danger);
 }
 
 /* Empty State */
@@ -530,6 +594,65 @@ button, input, select, textarea {
   color: var(--text-muted);
   cursor: pointer;
   padding: 4px;
+}
+
+/* Confirmation Dialog Modal */
+.confirm-modal-content {
+  background-color: var(--surface);
+  width: 90%;
+  max-width: 380px;
+  border-radius: var(--radius-lg);
+  padding: 24px 20px;
+  margin: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-lg);
+  animation: zoomIn 0.2s ease-out;
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.confirm-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: var(--danger-light);
+  color: var(--danger);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px;
+}
+
+.confirm-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.confirm-message {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
 }
 
 /* Sample Data Banner inside Modal */

@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from 'react'
 import EventCard from './EventCard.jsx'
 import EventFormModal from './EventFormModal.jsx'
+import ConfirmDialog from '../common/ConfirmDialog.jsx'
 import Toast from '../common/Toast.jsx'
-import { getEvents, createEvent, seedSampleEvent } from '../../services/eventService.js'
+import {
+  getEvents,
+  createEvent,
+  updateEvent,
+  deleteEvent,
+  seedSampleEvent
+} from '../../services/eventService.js'
 
 export default function EventPage() {
   const [events, setEvents] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState(null)
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [editingEvent, setEditingEvent] = useState(null)
+  const [deletingEvent, setDeletingEvent] = useState(null)
+  const [isDeleting, setIsDeleting] = useState(false)
   const [toast, setToast] = useState(null)
 
   // Memuat daftar event dari Firestore
@@ -30,14 +40,61 @@ export default function EventPage() {
     loadEvents()
   }, [])
 
-  // Simpan event baru
-  const handleCreateEvent = async (formData) => {
-    await createEvent(formData)
-    setToast({
-      message: 'Event berhasil disimpan ke Firestore.',
-      type: 'success'
-    })
+  // Buka modal untuk tambah
+  const handleOpenAdd = () => {
+    setEditingEvent(null)
+    setIsFormOpen(true)
+  }
+
+  // Buka modal untuk ubah
+  const handleOpenEdit = (event) => {
+    setEditingEvent(event)
+    setIsFormOpen(true)
+  }
+
+  // Buka konfirmasi hapus
+  const handleOpenDelete = (event) => {
+    setDeletingEvent(event)
+  }
+
+  // Simpan event baru atau perbarui event yang ada
+  const handleSubmitForm = async (formData, initialData) => {
+    if (initialData && initialData.id) {
+      await updateEvent(initialData.id, formData, initialData.tiket_terjual || 0)
+      setToast({
+        message: 'Event berhasil diperbarui.',
+        type: 'success'
+      })
+    } else {
+      await createEvent(formData)
+      setToast({
+        message: 'Event berhasil disimpan ke Firestore.',
+        type: 'success'
+      })
+    }
     await loadEvents()
+  }
+
+  // Eksekusi penghapusan event setelah dikonfirmasi
+  const handleConfirmDelete = async () => {
+    if (!deletingEvent) return
+    try {
+      setIsDeleting(true)
+      await deleteEvent(deletingEvent.id)
+      setToast({
+        message: `Event "${deletingEvent.nama}" berhasil dihapus.`,
+        type: 'success'
+      })
+      setDeletingEvent(null)
+      await loadEvents()
+    } catch (err) {
+      setToast({
+        message: 'Gagal menghapus event: ' + err.message,
+        type: 'error'
+      })
+    } finally {
+      setIsDeleting(false)
+    }
   }
 
   // Muat data contoh dari skema secara instan
@@ -81,7 +138,7 @@ export default function EventPage() {
           type="button"
           className="btn btn-primary btn-sm"
           id="btn-tambah-event-header"
-          onClick={() => setIsFormOpen(true)}
+          onClick={handleOpenAdd}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -137,7 +194,7 @@ export default function EventPage() {
               type="button"
               className="btn btn-primary"
               id="btn-tambah-event-empty"
-              onClick={() => setIsFormOpen(true)}
+              onClick={handleOpenAdd}
             >
               Tambah Event
             </button>
@@ -157,16 +214,38 @@ export default function EventPage() {
       {!isLoading && !errorMessage && events.length > 0 && (
         <div className="event-list" id="event-list-container">
           {events.map((event) => (
-            <EventCard key={event.id} event={event} />
+            <EventCard
+              key={event.id}
+              event={event}
+              onEdit={handleOpenEdit}
+              onDelete={handleOpenDelete}
+            />
           ))}
         </div>
       )}
 
-      {/* Modal Formulir Tambah Event */}
+      {/* Modal Formulir Tambah / Ubah Event */}
       <EventFormModal
         isOpen={isFormOpen}
-        onClose={() => setIsFormOpen(false)}
-        onSubmitSuccess={handleCreateEvent}
+        initialData={editingEvent}
+        onClose={() => {
+          setIsFormOpen(false)
+          setEditingEvent(null)
+        }}
+        onSubmitSuccess={handleSubmitForm}
+      />
+
+      {/* Dialog Konfirmasi Hapus Event */}
+      <ConfirmDialog
+        isOpen={Boolean(deletingEvent)}
+        title="Hapus Event"
+        message={`Apakah Anda yakin ingin menghapus event "${deletingEvent?.nama}"? Tindakan ini tidak dapat dibatalkan.`}
+        confirmLabel="Hapus Event"
+        cancelLabel="Batal"
+        isDanger={true}
+        isLoading={isDeleting}
+        onConfirm={handleConfirmDelete}
+        onClose={() => setDeletingEvent(null)}
       />
     </div>
   )
