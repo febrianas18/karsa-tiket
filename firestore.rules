@@ -1,0 +1,15 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /event/{eventId} {
+      allow read, write: if true;
+    }
+    match /pembeli/{pembeliId} {
+      allow read, write: if true;
+    }
+    match /tiket/{tiketId} {
+      allow read, write: if true;
+    }
+  }
+}
