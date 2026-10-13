@@ -8,6 +8,7 @@ import {
   query,
   orderBy,
   limit,
+  increment,
   serverTimestamp
 } from 'firebase/firestore'
 import { db, isFirebaseConfigured } from './firebase.js'
@@ -263,3 +264,39 @@ export async function seedSampleEvent() {
   saveLocalEvents([seededLocal, ...local])
   return seededLocal
 }
+
+/**
+ * Menambah / mengurangi tiket_terjual pada event
+ * Sinkronisasi instan ke Cloud Firestore DAN cache lokal (localStorage)
+ */
+export async function updateEventTiketTerjual(eventId, delta) {
+  if (!eventId) return
+
+  const numDelta = Number(delta) || 0
+
+  // 1. Update ke Firestore
+  if (isFirebaseConfigured) {
+    try {
+      const eventDocRef = doc(db, 'event', eventId)
+      await updateDoc(eventDocRef, {
+        tiket_terjual: increment(numDelta)
+      })
+    } catch (err) {
+      console.warn('Gagal update tiket_terjual di Firestore:', err)
+    }
+  }
+
+  // 2. Update cache lokal (localStorage)
+  const local = getLocalEvents()
+  const updated = local.map((ev) => {
+    if (ev.id === eventId) {
+      const currentTerjual = Number(ev.tiket_terjual || 0)
+      const kuota = Number(ev.kuota || 0)
+      const newTerjual = Math.min(kuota, Math.max(0, currentTerjual + numDelta))
+      return { ...ev, tiket_terjual: newTerjual }
+    }
+    return ev
+  })
+  saveLocalEvents(updated)
+}
+

@@ -75,10 +75,10 @@ export default function EventCard({ event, onEdit, onDelete }) {
           <span className="event-price-value">{formatRupiah(harga_tiket)}</span>
         </div>
 
-        <div className="event-quota-block">
-          <span className="event-quota-label">Kuota</span>
+        <div className="event-quota-block" style={{ textAlign: 'right' }}>
+          <span className="event-quota-label">Kuota ({kuota} kursi)</span>
           <span className="event-quota-value">
-            <strong>{tiket_terjual}</strong> / {kuota} terjual
+            <strong>{tiket_terjual}</strong> terjual &bull; Sisa <strong>{sisaKuota}</strong>
           </span>
         </div>
       </div>

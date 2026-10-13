@@ -12,6 +12,7 @@ import {
   serverTimestamp
 } from 'firebase/firestore'
 import { db, isFirebaseConfigured } from './firebase.js'
+import { updateEventTiketTerjual } from './eventService.js'
 
 const LOCAL_STORAGE_KEY = 'karsa_tiket_transaksi'
 
@@ -147,15 +148,8 @@ export async function createTiket({ event, pembeli, jumlah_tiket }) {
       // 1. Simpan tiket baru dengan addDoc
       const docRef = await addDoc(collection(db, 'tiket'), payload)
 
-      // 2. Tambah tiket_terjual pada event dengan increment
-      try {
-        const eventDocRef = doc(db, 'event', event.id)
-        await updateDoc(eventDocRef, {
-          tiket_terjual: increment(jumlah)
-        })
-      } catch (evErr) {
-        console.warn('Gagal memperbarui kuota event:', evErr)
-      }
+      // 2. Tambah tiket_terjual pada event (sinkron Firestore dan cache lokal)
+      await updateEventTiketTerjual(event.id, jumlah)
 
       const newTiket = {
         id: docRef.id,
@@ -169,6 +163,9 @@ export async function createTiket({ event, pembeli, jumlah_tiket }) {
       console.warn('Gagal menyimpan ke Firestore online, menyimpan ke cache lokal:', err)
     }
   }
+
+  // Fallback penyimpanan lokal: pastikan tiket_terjual event tetap bertambah
+  await updateEventTiketTerjual(event.id, jumlah)
 
   const fallbackTiket = {
     id: 'local_tk_' + Date.now(),
@@ -184,7 +181,7 @@ export async function createTiket({ event, pembeli, jumlah_tiket }) {
  * Memperbarui status tiket sesuai aturan transisi status (PRD 4 & Skema 5.1):
  * - menunggu_bayar -> lunas atau dibatalkan
  * - lunas -> hadir
- * - dibatalkan: tiket_terjual event dikurangi increment(-jumlah_tiket)
+ * - dibatalkan: tiket_terjual event dikurangi (-jumlah_tiket)
  */
 export async function updateTiketStatus(tiketId, newStatus, currentTiket) {
   const { status: oldStatus, event_id, jumlah_tiket } = currentTiket
@@ -204,21 +201,14 @@ export async function updateTiketStatus(tiketId, newStatus, currentTiket) {
     try {
       const tiketDocRef = doc(db, 'tiket', tiketId)
       await updateDoc(tiketDocRef, { status: newStatus })
-
-      // Jika tiket dibatalkan, kurangi tiket_terjual pada event
-      if (newStatus === 'dibatalkan' && event_id) {
-        try {
-          const eventDocRef = doc(db, 'event', event_id)
-          await updateDoc(eventDocRef, {
-            tiket_terjual: increment(-Number(jumlah_tiket || 0))
-          })
-        } catch (evErr) {
-          console.warn('Gagal mengembalikan kuota event:', evErr)
-        }
-      }
     } catch (err) {
       console.warn('Gagal memperbarui status di Firestore:', err)
     }
+  }
+
+  // Jika tiket dibatalkan, kembalikan kuota tiket_terjual pada event
+  if (newStatus === 'dibatalkan' && event_id) {
+    await updateEventTiketTerjual(event_id, -Number(jumlah_tiket || 0))
   }
 
   const local = getLocalTiket()
