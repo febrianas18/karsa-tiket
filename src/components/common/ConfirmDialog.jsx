@@ -14,7 +14,7 @@ export default function ConfirmDialog({
   if (!isOpen) return null
 
   return (
-    <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="confirm-dialog-title">
+    <div className="modal-overlay confirm-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="confirm-dialog-title">
       <div className="confirm-modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="confirm-icon-wrap">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
