@@ -424,6 +424,231 @@ button, input, select, textarea {
   border-color: var(--danger);
 }
 
+.btn-card-primary-action {
+  background-color: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.btn-card-primary-action:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-card-checkin {
+  background-color: var(--success);
+  color: #fff;
+  border-color: var(--success);
+}
+
+.btn-card-checkin:hover {
+  background-color: #059669;
+}
+
+/* Status Badges */
+.badge-menunggu {
+  background-color: var(--status-menunggu-bayar-bg);
+  color: var(--status-menunggu-bayar);
+}
+
+.badge-lunas {
+  background-color: var(--status-lunas-bg);
+  color: var(--status-lunas);
+}
+
+.badge-hadir {
+  background-color: var(--status-hadir-bg);
+  color: var(--status-hadir);
+}
+
+.badge-dibatalkan {
+  background-color: var(--status-dibatalkan-bg);
+  color: var(--status-dibatalkan);
+}
+
+/* Search Bar (Pembeli) */
+.search-bar-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 2px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 36px 10px 36px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--surface);
+  color: var(--text-primary);
+  transition: all 0.15s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.btn-clear-search {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* Pembeli Specifics */
+.pembeli-card .pembeli-avatar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--primary);
+}
+
+.pembeli-tag-id {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.pembeli-contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pembeli-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* Status Tabs (Tiket) */
+.status-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.status-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.status-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.status-tab-btn.active {
+  background-color: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px var(--primary-glow);
+}
+
+.tab-count-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.status-tab-btn.active .tab-count-badge {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+
+/* Tiket Card Specifics */
+.tiket-buyer-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--surface-alt);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+}
+
+.buyer-icon-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.buyer-wa {
+  color: var(--text-muted);
+}
+
+/* Tiket Summary Box in Form */
+.tiket-summary-box {
+  background-color: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.summary-row.total-highlight {
+  border-top: 1px dashed var(--border);
+  padding-top: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.summary-total-val {
+  font-size: 16px;
+  color: var(--primary);
+  font-weight: 800;
+}
+
+.summary-status-note {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
 /* ============================================================
    State Views (Loading, Empty, Error)
    Sesuai PRD Bagian 6: "Bedakan loading, empty, dan error pada setiap halaman daftar."
