@@ -3,6 +3,7 @@ import EventCard from './EventCard.jsx'
 import EventFormModal from './EventFormModal.jsx'
 import ConfirmDialog from '../common/ConfirmDialog.jsx'
 import Toast from '../common/Toast.jsx'
+import { LoadingState, EmptyState, ErrorState } from '../common/StateViews.jsx'
 import {
   getEvents,
   createEvent,
@@ -30,7 +31,7 @@ export default function EventPage() {
       setEvents(data)
     } catch (err) {
       console.error(err)
-      setErrorMessage('Gagal memuat daftar event. Silakan periksa koneksi.')
+      setErrorMessage('Gagal memuat daftar event. Silakan periksa koneksi atau coba lagi.')
     } finally {
       setIsLoading(false)
     }
@@ -148,69 +149,58 @@ export default function EventPage() {
         </button>
       </div>
 
-      {/* Loading State */}
+      {/* 1. Loading State */}
       {isLoading && (
-        <div className="loading-state-container" aria-label="Memuat data event...">
-          <div className="skeleton-card"></div>
-          <div className="skeleton-card"></div>
-        </div>
+        <LoadingState text="Memuat daftar event..." count={2} />
       )}
 
-      {/* Error State */}
+      {/* 2. Error State */}
       {!isLoading && errorMessage && (
-        <div className="error-card" role="alert">
-          <div className="error-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="8" x2="12" y2="12"></line>
-              <line x1="12" y1="16" x2="12.01" y2="16"></line>
-            </svg>
-          </div>
-          <h3 className="error-title">Gagal Memuat Event</h3>
-          <p className="error-desc">{errorMessage}</p>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={loadEvents}>
-            Coba Lagi
-          </button>
-        </div>
+        <ErrorState
+          title="Gagal Memuat Event"
+          message={errorMessage}
+          onRetry={loadEvents}
+          retryLabel="Coba Lagi"
+        />
       )}
 
-      {/* Empty State (AC 2: Belum ada event) */}
+      {/* 3. Empty State (AC 2: Belum ada event) */}
       {!isLoading && !errorMessage && events.length === 0 && (
-        <div className="empty-card" id="empty-state-event">
-          <div className="empty-icon-wrap">
+        <EmptyState
+          icon={(
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
               <line x1="16" y1="2" x2="16" y2="6"></line>
               <line x1="8" y1="2" x2="8" y2="6"></line>
               <line x1="3" y1="10" x2="21" y2="10"></line>
             </svg>
-          </div>
-          <h2 className="empty-title">Belum ada event</h2>
-          <p className="empty-desc">
-            Daftar acara komunitas masih kosong. Buat event pertama atau gunakan data contoh dari skema.
-          </p>
-          <div className="empty-actions">
-            <button
-              type="button"
-              className="btn btn-primary"
-              id="btn-tambah-event-empty"
-              onClick={handleOpenAdd}
-            >
-              Tambah Event
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              id="btn-muat-contoh-empty"
-              onClick={handleLoadSample}
-            >
-              Muat Data Contoh Skema
-            </button>
-          </div>
-        </div>
+          )}
+          title="Belum ada event"
+          description="Daftar acara komunitas masih kosong. Buat event pertama atau gunakan data contoh dari skema."
+          action={(
+            <div className="empty-actions">
+              <button
+                type="button"
+                className="btn btn-primary"
+                id="btn-tambah-event-empty"
+                onClick={handleOpenAdd}
+              >
+                Tambah Event
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                id="btn-muat-contoh-empty"
+                onClick={handleLoadSample}
+              >
+                Muat Data Contoh Skema
+              </button>
+            </div>
+          )}
+        />
       )}
 
-      {/* Daftar Event */}
+      {/* 4. Daftar Event (Success State dengan Data) */}
       {!isLoading && !errorMessage && events.length > 0 && (
         <div className="event-list" id="event-list-container">
           {events.map((event) => (

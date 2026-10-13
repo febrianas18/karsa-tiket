@@ -424,45 +424,192 @@ button, input, select, textarea {
   border-color: var(--danger);
 }
 
-/* Empty State */
-.empty-card {
+/* ============================================================
+   State Views (Loading, Empty, Error)
+   Sesuai PRD Bagian 6: "Bedakan loading, empty, dan error pada setiap halaman daftar."
+   ============================================================ */
+
+.state-container {
   background-color: var(--surface);
   border-radius: var(--radius-lg);
-  border: 1px dashed var(--border);
-  padding: 40px 20px;
-  text-align: center;
+  padding: 32px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
   gap: 12px;
   box-shadow: var(--shadow-sm);
-  margin-top: 4px;
+  animation: fadeIn 0.2s ease-in-out;
 }
 
-.empty-icon-wrap {
+.state-icon-wrap {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background-color: var(--primary-light);
-  color: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 2px;
 }
 
-.empty-title {
+.state-title {
   font-size: 16px;
   font-weight: 700;
   color: var(--text-primary);
 }
 
-.empty-desc {
+.state-desc {
   font-size: 13px;
   color: var(--text-secondary);
-  max-width: 320px;
+  max-width: 340px;
   line-height: 1.5;
+}
+
+.state-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 260px;
+  margin-top: 6px;
+}
+
+/* 1. Loading State Styles */
+.loading-state-view {
+  background: transparent;
+  box-shadow: none;
+  padding: 10px 0;
+  gap: 16px;
+}
+
+.loading-spinner-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #E2E8F0;
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.skeleton-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.skeleton-card {
+  width: 100%;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 25%, rgba(255, 255, 255, 0.6) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.skeleton-pill {
+  width: 120px;
+  height: 16px;
+  background-color: #E2E8F0;
+  border-radius: var(--radius-full);
+}
+
+.skeleton-badge {
+  width: 70px;
+  height: 20px;
+  background-color: #E2E8F0;
+  border-radius: var(--radius-full);
+}
+
+.skeleton-line {
+  height: 16px;
+  background-color: #E2E8F0;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton-title {
+  width: 75%;
+  height: 20px;
+}
+
+.skeleton-subtitle {
+  width: 50%;
+  height: 14px;
+}
+
+.skeleton-footer {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px dashed var(--border);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+
+.skeleton-box {
+  width: 80px;
+  height: 28px;
+  background-color: #E2E8F0;
+  border-radius: var(--radius-sm);
+}
+
+/* 2. Empty State Styles */
+.empty-state-view {
+  border: 1px dashed var(--border);
+  padding: 44px 20px;
+  margin-top: 4px;
+}
+
+.empty-icon-glow {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  box-shadow: 0 4px 14px var(--primary-glow);
 }
 
 .empty-actions {
@@ -471,60 +618,27 @@ button, input, select, textarea {
   gap: 8px;
   width: 100%;
   max-width: 260px;
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
-/* Loading & Skeletons */
-.loading-state-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.skeleton-card {
-  height: 140px;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(90deg, #F1F4F9 25%, #E2E8F0 50%, #F1F4F9 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-/* Error State */
-.error-card {
+/* 3. Error State Styles */
+.error-state-view {
   background-color: var(--danger-light);
   border: 1px solid #FECACA;
-  border-radius: var(--radius-lg);
-  padding: 24px 20px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
+  padding: 32px 20px;
 }
 
-.error-icon {
+.error-icon-glow {
+  background-color: #FEE2E2;
   color: var(--danger);
 }
 
-.error-title {
-  font-size: 15px;
-  font-weight: 700;
+.error-title-text {
   color: #991B1B;
 }
 
-.error-desc {
-  font-size: 13px;
+.error-desc-text {
   color: #B91C1C;
-  max-width: 300px;
 }
 
 /* Modal Overlay & Content */
