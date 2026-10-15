@@ -6,10 +6,12 @@ import {
   updateDoc,
   deleteDoc,
   query,
+  where,
   orderBy,
   limit,
   increment,
-  serverTimestamp
+  serverTimestamp,
+  writeBatch
 } from 'firebase/firestore'
 import { db, isFirebaseConfigured } from './firebase.js'
 
@@ -212,21 +214,50 @@ export async function updateEvent(id, formData, currentTiketTerjual = 0) {
 }
 
 /**
- * Menghapus event dari Firestore (deleteDoc)
+ * Menghapus event dari Firestore dan menghapus otomatis semua tiket terkait (Cascade Delete)
  */
 export async function deleteEvent(id) {
   if (isFirebaseConfigured) {
     try {
-      const docRef = doc(db, 'event', id)
-      await deleteDoc(docRef)
+      // 1. Ambil seluruh tiket yang terhubung dengan event ini
+      const tiketQuery = query(collection(db, 'tiket'), where('event_id', '==', id))
+      const tiketSnapshot = await getDocs(tiketQuery)
+
+      // 2. Gunakan writeBatch untuk menghapus tiket terkait dan event sekaligus secara atomic
+      const batch = writeBatch(db)
+      tiketSnapshot.docs.forEach((docSnap) => {
+        batch.delete(docSnap.ref)
+      })
+      batch.delete(doc(db, 'event', id))
+      await batch.commit()
     } catch (err) {
-      console.warn('Gagal menghapus di Firestore online, menghapus cache lokal:', err)
+      console.warn('Gagal menghapus via writeBatch di Firestore, mencoba fallback deleteDoc:', err)
+      try {
+        const docRef = doc(db, 'event', id)
+        await deleteDoc(docRef)
+      } catch (innerErr) {
+        console.warn('Gagal menghapus dokumen event:', innerErr)
+      }
     }
   }
 
+  // 3. Bersihkan cache lokal event
   const local = getLocalEvents()
   const filtered = local.filter((ev) => ev.id !== id)
   saveLocalEvents(filtered)
+
+  // 4. Bersihkan cache lokal tiket (hapus semua tiket milik event ini)
+  try {
+    const rawTiket = localStorage.getItem('karsa_tiket_transaksi')
+    if (rawTiket) {
+      const listTiket = JSON.parse(rawTiket)
+      const filteredTiket = listTiket.filter((tk) => tk.event_id !== id)
+      localStorage.setItem('karsa_tiket_transaksi', JSON.stringify(filteredTiket))
+    }
+  } catch (err) {
+    console.error('Gagal membersihkan cache lokal tiket terkait:', err)
+  }
+
   return true
 }
 

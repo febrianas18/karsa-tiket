@@ -83,7 +83,7 @@ export default function EventPage() {
       setIsDeleting(true)
       await deleteEvent(deletingEvent.id)
       setToast({
-        message: `Event "${deletingEvent.nama}" berhasil dihapus.`,
+        message: `Event "${deletingEvent.nama}" dan seluruh tiket terkait berhasil dihapus.`,
         type: 'success'
       })
       setDeletingEvent(null)
@@ -229,7 +229,7 @@ export default function EventPage() {
       <ConfirmDialog
         isOpen={Boolean(deletingEvent)}
         title="Hapus Event"
-        message={`Apakah Anda yakin ingin menghapus event "${deletingEvent?.nama}"? Tindakan ini tidak dapat dibatalkan.`}
+        message={`Apakah Anda yakin ingin menghapus event "${deletingEvent?.nama}"? Seluruh tiket yang terkait dengan event ini juga akan dihapus otomatis. Tindakan ini tidak dapat dibatalkan.`}
         confirmLabel="Hapus Event"
         cancelLabel="Batal"
         isDanger={true}

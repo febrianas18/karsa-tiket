@@ -148,6 +148,7 @@ button, input, select, textarea {
   color: var(--text-secondary);
 }
 
+
 .header-badge {
   font-size: 11px;
   font-weight: 700;
@@ -1255,3 +1256,404 @@ button, input, select, textarea {
   background: #CBD5E1;
   border-radius: var(--radius-full);
 }
+
+/* ==========================================================================
+   MODUL REKAP STYLES
+   ========================================================================== */
+.rekap-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rekap-selector-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rekap-selector-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rekap-select-input {
+  width: 100%;
+  padding: 11px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background-color: var(--surface-alt);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  outline: none;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.rekap-select-input:focus {
+  border-color: var(--primary);
+  background-color: var(--surface);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.rekap-event-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--border);
+}
+
+.rekap-meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background-color: var(--surface-alt);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+}
+
+.rekap-meta-pill svg {
+  color: var(--text-muted);
+}
+
+/* Progress Bar Card */
+.rekap-progress-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rekap-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rekap-progress-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.rekap-progress-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+}
+
+.rekap-progress-badge.status-tersedia {
+  background-color: var(--success-light);
+  color: var(--success);
+}
+
+.rekap-progress-badge.status-hampir-penuh {
+  background-color: var(--warning-light);
+  color: var(--warning);
+}
+
+.rekap-progress-badge.status-habis {
+  background-color: var(--danger-light);
+  color: var(--danger);
+}
+
+.rekap-progress-bar-track {
+  width: 100%;
+  height: 10px;
+  background-color: var(--surface-alt);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.rekap-progress-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, var(--primary) 0%, #818CF8 100%);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rekap-progress-bar-fill.bar-full {
+  background: linear-gradient(90deg, #F59E0B 0%, var(--danger) 100%);
+}
+
+.rekap-progress-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.rekap-progress-footer strong {
+  color: var(--text-primary);
+}
+
+/* Stat Cards 2x2 Grid */
+.rekap-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.rekap-stat-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 14px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.rekap-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.rekap-stat-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-wrap-terjual {
+  background-color: var(--primary-light);
+  color: var(--primary);
+}
+
+.icon-wrap-kuota {
+  background-color: var(--secondary-light);
+  color: var(--secondary);
+}
+
+.icon-wrap-pendapatan {
+  background-color: #ECFDF5;
+  color: #059669;
+}
+
+.icon-wrap-hadir {
+  background-color: #F5F3FF;
+  color: #7C3AED;
+}
+
+.rekap-stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: 1.2;
+}
+
+.rekap-stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+  letter-spacing: -0.3px;
+  word-break: break-word;
+}
+
+.rekap-stat-value.value-pendapatan {
+  color: #059669;
+  font-size: 17px;
+}
+
+.rekap-stat-desc {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* Status Breakdown Section */
+.rekap-breakdown-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rekap-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rekap-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.rekap-section-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.rekap-breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rekap-breakdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  transition: background-color 0.15s ease;
+}
+
+.breakdown-menunggu {
+  background-color: var(--status-menunggu-bayar-bg);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.breakdown-lunas {
+  background-color: var(--status-lunas-bg);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.breakdown-hadir {
+  background-color: var(--status-hadir-bg);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.breakdown-dibatalkan {
+  background-color: var(--status-dibatalkan-bg);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.breakdown-item-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.breakdown-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dot-menunggu { background-color: var(--status-menunggu-bayar); }
+.dot-lunas { background-color: var(--status-lunas); }
+.dot-hadir { background-color: var(--status-hadir); }
+.dot-dibatalkan { background-color: var(--status-dibatalkan); }
+
+.breakdown-item-name {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.breakdown-item-qty {
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.breakdown-item-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.breakdown-item-total {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.breakdown-item-note {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* Transaksi Tiket Mini Table / List */
+.rekap-tiket-list-wrap {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rekap-tiket-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.rekap-tiket-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.rekap-tiket-info-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rekap-tiket-pembeli {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.rekap-tiket-sub {
+  font-size: 11px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rekap-tiket-amount-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.rekap-tiket-total {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
